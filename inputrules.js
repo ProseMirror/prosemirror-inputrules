@@ -1,4 +1,5 @@
-const {Keymap, Plugin} = require("../edit")
+const {Plugin} = require("../edit")
+const Keymap = require("browserkeymap")
 
 // ;; Input rules are regular expressions describing a piece of text
 // that, when typed, causes something to happen. This might be
