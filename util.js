@@ -28,7 +28,7 @@ function wrappingInputRule(regexp, nodeType, getAttrs, joinPredicate) {
     if (before && before.type == nodeType && joinable(tr.doc, start - 1) &&
         (!joinPredicate || joinPredicate(match, before)))
       tr.join(start - 1)
-    return tr.apply()
+    return tr
   })
 }
 exports.wrappingInputRule = wrappingInputRule
@@ -48,7 +48,6 @@ function textblockTypeInputRule(regexp, nodeType, getAttrs) {
     return state.tr
       .delete(start, end)
       .setBlockType(start, start, nodeType, attrs)
-      .apply()
   })
 }
 exports.textblockTypeInputRule = textblockTypeInputRule

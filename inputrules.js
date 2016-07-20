@@ -1,9 +1,11 @@
+const Keymap = require("browserkeymap")
+
 // ;; Input rules are regular expressions describing a piece of text
 // that, when typed, causes something to happen. This might be
 // changing two dashes into an emdash, wrapping a paragraph starting
 // with `"> "` into a blockquote, or something entirely different.
 class InputRule {
-  // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → EditorState>)
+  // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → EditorTransform>)
   // Create an input rule. The rule applies when the user typed
   // something and the text directly in front of the cursor matches
   // `match`, which should probably end with `$`.
@@ -32,7 +34,7 @@ function stringHandler(string) {
       }
     }
     let marks = state.doc.marksAt(start)
-    return state.tr.replaceWith(start, end, state.schema.text(insert, marks)).apply()
+    return state.tr.replaceWith(start, end, state.schema.text(insert, marks))
   }
 }
 
@@ -40,15 +42,37 @@ const MAX_MATCH = 100
 
 exports.inputRules = function({rules}) {
   return {
+    stateFields: {
+      appliedInputRule: {
+        init() { return null },
+        applyTransform(_, _tr, options) { return options.fromInputRule },
+        applySelection() { return null }
+      }
+    },
+
     applyTextInput(state, from, to, text) {
       let $from = state.doc.resolve(from)
       let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
                                                 null, "\ufffc") + text
       for (let i = 0; i < rules.length; i++) {
         let match = rules[i].match.exec(textBefore)
-        let newState = match && rules[i].handler(state, match, from - (match[0].length - text.length), to, from)
-        if (newState) return newState
+        let transform = match && rules[i].handler(state, match, from - (match[0].length - text.length), to, from)
+        if (transform)
+          return transform.apply({fromInputRule: {transform, from, to, text}})
       }
-    }
+    },
+
+    keymaps: [new Keymap({Backspace: maybeUndoInputRule})]
   }
+}
+
+function maybeUndoInputRule(state) {
+  let undoable = state.appliedInputRule
+  if (!undoable) return null
+  let tr = state.tr, toUndo = undoable.transform
+  for (let i = toUndo.steps.length - 1; i >= 0; i--)
+    tr.step(toUndo.steps[i].invert(toUndo.docs[i]))
+  let marks = tr.doc.marksAt(undoable.from)
+  tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks))
+  return tr.apply()
 }
