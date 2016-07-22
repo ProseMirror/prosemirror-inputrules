@@ -1,5 +1,3 @@
-const Keymap = require("browserkeymap")
-
 // ;; Input rules are regular expressions describing a piece of text
 // that, when typed, causes something to happen. This might be
 // changing two dashes into an emdash, wrapping a paragraph starting
@@ -62,17 +60,21 @@ exports.inputRules = function({rules}) {
       }
     },
 
-    keymaps: [new Keymap({Backspace: maybeUndoInputRule})]
+    onKeyDown(view, event) {
+      if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.props.onAction)
+      return false
+    }
   }
 }
 
-function maybeUndoInputRule(state) {
+function maybeUndoInputRule(state, onAction) {
   let undoable = state.appliedInputRule
-  if (!undoable) return null
+  if (!undoable) return false
   let tr = state.tr, toUndo = undoable.transform
   for (let i = toUndo.steps.length - 1; i >= 0; i--)
     tr.step(toUndo.steps[i].invert(toUndo.docs[i]))
   let marks = tr.doc.marksAt(undoable.from)
   tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks))
-  return tr.apply()
+  onAction(tr.action())
+  return true
 }
