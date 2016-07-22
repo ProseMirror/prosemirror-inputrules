@@ -43,21 +43,26 @@ exports.inputRules = function({rules}) {
     stateFields: {
       appliedInputRule: {
         init() { return null },
-        applyTransform(_, _tr, options) { return options.fromInputRule },
-        applySelection() { return null }
+        applyAction(state, action) {
+          if (action.type == "transform") return state.fromInputRule
+          if (action.type == "selection") return null
+          return state.appliedInputRule
+        }
       }
     },
 
-    applyTextInput(state, from, to, text) {
-      let $from = state.doc.resolve(from)
+    onTextInput(view, from, to, text) {
+      let state = view.state, $from = state.doc.resolve(from)
       let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
                                                 null, "\ufffc") + text
       for (let i = 0; i < rules.length; i++) {
         let match = rules[i].match.exec(textBefore)
         let transform = match && rules[i].handler(state, match, from - (match[0].length - text.length), to, from)
-        if (transform)
-          return transform.apply({fromInputRule: {transform, from, to, text}})
+        if (!transform) continue
+        view.props.onAction(transform.action({fromInputRule: {transform, from, to, text}}))
+        return true
       }
+      return false
     },
 
     onKeyDown(view, event) {
