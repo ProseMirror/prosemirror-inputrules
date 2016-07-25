@@ -44,7 +44,7 @@ exports.inputRules = function({rules}) {
       appliedInputRule: {
         init() { return null },
         applyAction(state, action) {
-          if (action.type == "transform") return state.fromInputRule
+          if (action.type == "transform") return action.fromInputRule
           if (action.type == "selection") return null
           return state.appliedInputRule
         }
@@ -65,7 +65,7 @@ exports.inputRules = function({rules}) {
       return false
     },
 
-    onKeyDown(view, event) {
+    handleKeyDown(view, event) {
       if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.props.onAction)
       return false
     }
