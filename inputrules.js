@@ -51,7 +51,7 @@ exports.inputRules = function({rules}) {
       }
     },
 
-    onTextInput(view, from, to, text) {
+    handleTextInput(view, from, to, text) {
       let state = view.state, $from = state.doc.resolve(from)
       let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
                                                 null, "\ufffc") + text
