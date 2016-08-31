@@ -13,7 +13,7 @@ const {findWrapping, joinable} = require("../transform")
 // compute them from the regular expression match.
 //
 // By default, if there's a node with the same type above the newly
-// wrapped node, the rule will try to [join](#Transform.join) those
+// wrapped node, the rule will try to [join](#transform.Transform.join) those
 // two nodes. You can pass a join predicate, which takes a regular
 // expression match and the node before the wrapped node, and can
 // return a boolean to indicate whether a join should happen.
