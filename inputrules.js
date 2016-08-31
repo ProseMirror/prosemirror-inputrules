@@ -1,4 +1,4 @@
-// ;; Input rules are regular expressions describing a piece of text
+// ::- Input rules are regular expressions describing a piece of text
 // that, when typed, causes something to happen. This might be
 // changing two dashes into an emdash, wrapping a paragraph starting
 // with `"> "` into a blockquote, or something entirely different.
