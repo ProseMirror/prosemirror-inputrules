@@ -1,3 +1,5 @@
+const {Plugin} = require("../state")
+
 // ::- Input rules are regular expressions describing a piece of text
 // that, when typed, causes something to happen. This might be
 // changing two dashes into an emdash, wrapping a paragraph starting
@@ -37,43 +39,53 @@ function stringHandler(string) {
 }
 
 const MAX_MATCH = 100
+let nextID = 1
 
-exports.inputRules = function({rules}) {
-  return {
+// :: (config: {rules: [InputRule]}) → Plugin
+// Create an input rules plugin. When enabled, it will cause text
+// input that matches any of the given rules to trigger the rule's
+// action, and binds the backspace key, when applied directly after an
+// input rule triggered, to undo the rule's effect.
+function inputRules({rules}) {
+  let propName = "appliedInputRule_" + (nextID++)
+
+  return new Plugin({
     stateFields: {
-      appliedInputRule: {
+      [propName]: {
         init() { return null },
         applyAction(state, action) {
           if (action.type == "transform") return action.fromInputRule
           if (action.type == "selection") return null
-          return state.appliedInputRule
+          return state[propName]
         }
       }
     },
 
-    handleTextInput(view, from, to, text) {
-      let state = view.state, $from = state.doc.resolve(from)
-      let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
+    props: {
+      handleTextInput(view, from, to, text) {
+        let state = view.state, $from = state.doc.resolve(from)
+        let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
                                                 null, "\ufffc") + text
-      for (let i = 0; i < rules.length; i++) {
-        let match = rules[i].match.exec(textBefore)
-        let transform = match && rules[i].handler(state, match, from - (match[0].length - text.length), to, from)
-        if (!transform) continue
-        view.props.onAction(transform.action({fromInputRule: {transform, from, to, text}}))
-        return true
+        for (let i = 0; i < rules.length; i++) {
+          let match = rules[i].match.exec(textBefore)
+          let transform = match && rules[i].handler(state, match, from - (match[0].length - text.length), to, from)
+          if (!transform) continue
+          view.props.onAction(transform.action({fromInputRule: {transform, from, to, text}}))
+          return true
+        }
+        return false
+      },
+
+      handleKeyDown(view, event) {
+        if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.props.onAction, view.state[propName])
+        return false
       }
-      return false
-    },
-
-    handleKeyDown(view, event) {
-      if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.props.onAction)
-      return false
     }
-  }
+  })
 }
+exports.inputRules = inputRules
 
-function maybeUndoInputRule(state, onAction) {
-  let undoable = state.appliedInputRule
+function maybeUndoInputRule(state, onAction, undoable) {
   if (!undoable) return false
   let tr = state.tr, toUndo = undoable.transform
   for (let i = toUndo.steps.length - 1; i >= 0; i--)
