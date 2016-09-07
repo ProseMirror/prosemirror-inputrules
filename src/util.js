@@ -1,5 +1,5 @@
 const {InputRule} = require("./inputrules")
-const {findWrapping, joinable} = require("../transform")
+const {findWrapping, joinable} = require("prosemirror-transform")
 
 // :: (RegExp, NodeType, ?union<Object, ([string]) → ?Object>, ?([string], Node) → bool) → InputRule
 // Build an input rule for automatically wrapping a textblock when a

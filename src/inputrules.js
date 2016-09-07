@@ -1,4 +1,4 @@
-const {Plugin} = require("../state")
+const {Plugin} = require("prosemirror-state")
 
 // ::- Input rules are regular expressions describing a piece of text
 // that, when typed, causes something to happen. This might be

@@ -1,0 +1,29 @@
+{
+  "name": "prosemirror-inputrules",
+  "version": "0.11.0",
+  "description": "Automatic transforms on text input for ProseMirror",
+  "main": "src/index.js",
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "Marijn Haverbeke",
+      "email": "marijnh@gmail.com",
+      "web": "http://marijnhaverbeke.nl"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/prosemirror/prosemirror-inputrules.git"
+  },
+  "dependencies": {
+    "prosemirror-state": "^0.11.0",
+    "prosemirror-transform": "^0.11.0"
+  },
+  "devDependencies": {
+    "rimraf": "^2.5.0"
+  },
+  "scripts": {
+    "test": "true",
+    "x-prepublish": "rimraf dist && babel -d dist src"
+  }
+}
