@@ -24,13 +24,16 @@ class InputRule {
 exports.InputRule = InputRule
 
 function stringHandler(string) {
-  return function(state, match, start, end, realStart) {
+  return function(state, match, start, end) {
     let insert = string
     if (match[1]) {
-      start += match[0].length - match[1].length
-      if (start > realStart) {
-        insert = match[0].slice(start - realStart, match[0].length - match[1].length) + insert
-        start = realStart
+      let offset = match[0].lastIndexOf(match[1])
+      insert += match[0].slice(offset + match[1].length)
+      start += offset
+      let cutOff = start - end
+      if (cutOff > 0) {
+        insert = match[0].slice(offset - cutOff, offset) + insert
+        start = end
       }
     }
     let marks = state.doc.marksAt(start)
@@ -65,10 +68,10 @@ function inputRules({rules}) {
       handleTextInput(view, from, to, text) {
         let state = view.state, $from = state.doc.resolve(from)
         let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
-                                                null, "\ufffc") + text
+                                                  null, "\ufffc") + text
         for (let i = 0; i < rules.length; i++) {
           let match = rules[i].match.exec(textBefore)
-          let transform = match && rules[i].handler(state, match, from - (match[0].length - text.length), to, from)
+          let transform = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
           if (!transform) continue
           view.props.onAction(transform.action({fromInputRule: {transform, from, to, text}}))
           return true
