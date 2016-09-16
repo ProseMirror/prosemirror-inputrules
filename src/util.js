@@ -1,5 +1,5 @@
 const {InputRule} = require("./inputrules")
-const {findWrapping, joinable} = require("prosemirror-transform")
+const {findWrapping, canJoin} = require("prosemirror-transform")
 
 // :: (RegExp, NodeType, ?union<Object, ([string]) → ?Object>, ?([string], Node) → bool) → InputRule
 // Build an input rule for automatically wrapping a textblock when a
@@ -25,7 +25,7 @@ function wrappingInputRule(regexp, nodeType, getAttrs, joinPredicate) {
     if (!wrapping) return null
     tr.wrap(range, wrapping)
     let before = tr.doc.resolve(start - 1).nodeBefore
-    if (before && before.type == nodeType && joinable(tr.doc, start - 1) &&
+    if (before && before.type == nodeType && canJoin(tr.doc, start - 1) &&
         (!joinPredicate || joinPredicate(match, before)))
       tr.join(start - 1)
     return tr
