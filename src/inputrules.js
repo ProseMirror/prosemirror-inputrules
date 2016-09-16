@@ -5,17 +5,21 @@ const {Plugin} = require("prosemirror-state")
 // changing two dashes into an emdash, wrapping a paragraph starting
 // with `"> "` into a blockquote, or something entirely different.
 class InputRule {
-  // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → EditorTransform>)
+  // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → ?EditorTransform>)
   // Create an input rule. The rule applies when the user typed
   // something and the text directly in front of the cursor matches
   // `match`, which should probably end with `$`.
   //
-  // The `handler` can be a string, in which case the matched text
-  // will simply be replaced by that string, or a function, which will
-  // be called with the match array produced by
+  // The `handler` can be a string, in which case the matched text, or
+  // the first matched group in the regexp, simply be replaced by that
+  // string.
+  //
+  // Or a it can be a function, which will be called with the match
+  // array produced by
   // [`RegExp.exec`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec),
-  // and should produce a new state in which the rule has taken
-  // effect, or null to indicate the input was not handled.
+  // as well as the start and end of the matched range, and which can
+  // return a [transform](#state.EditorTransform) that describes the
+  // rule's effect, or null to indicate the input was not handled.
   constructor(match, handler) {
     this.match = match
     this.handler = typeof handler == "string" ? stringHandler(handler) : handler
