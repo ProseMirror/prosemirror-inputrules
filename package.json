@@ -2,7 +2,7 @@
   "name": "prosemirror-inputrules",
   "version": "0.11.0",
   "description": "Automatic transforms on text input for ProseMirror",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "maintainers": [
     {
@@ -20,10 +20,13 @@
     "prosemirror-transform": "^0.11.0"
   },
   "devDependencies": {
+    "buble": "~0.14.0",
     "rimraf": "^2.5.0"
   },
   "scripts": {
     "test": "true",
-    "x-prepublish": "rimraf dist && babel -d dist src"
+    "build": "rimraf dist && buble -i src -o dist",
+    "link-src": "rimraf dist && ln -s src dist",
+    "prepublish": "npm run build"
   }
 }
