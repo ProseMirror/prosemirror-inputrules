@@ -3,7 +3,7 @@ const {findWrapping, canJoin} = require("prosemirror-transform")
 
 // :: (RegExp, NodeType, ?union<Object, ([string]) → ?Object>, ?([string], Node) → bool) → InputRule
 // Build an input rule for automatically wrapping a textblock when a
-// given string is typed. The `regexp` and `filter` arguments are
+// given string is typed. The `regexp` argument is
 // directly passed through to the `InputRule` constructor. You'll
 // probably want the regexp to start with `^`, so that the pattern can
 // only occur at the start of a textblock.
