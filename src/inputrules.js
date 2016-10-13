@@ -46,7 +46,6 @@ function stringHandler(string) {
 }
 
 const MAX_MATCH = 100
-let nextID = 1
 
 // :: (config: {rules: [InputRule]}) → Plugin
 // Create an input rules plugin. When enabled, it will cause text
@@ -54,19 +53,17 @@ let nextID = 1
 // action, and binds the backspace key, when applied directly after an
 // input rule triggered, to undo the rule's effect.
 function inputRules({rules}) {
-  let propName = "appliedInputRule_" + (nextID++)
-
-  return new Plugin({
-    stateFields: {
-      [propName]: {
-        init() { return null },
-        applyAction(state, action) {
-          if (action.type == "transform") return action.fromInputRule
-          if (action.type == "selection") return null
-          return state[propName]
-        }
+  let plugin = new Plugin({
+    state: {
+      init() { return null },
+      applyAction(action, prev) {
+        if (action.type == "transform") return action.fromInputRule
+        if (action.type == "selection") return null
+        return prev
       }
     },
+
+    name: "inputRules",
 
     props: {
       handleTextInput(view, from, to, text) {
@@ -84,11 +81,12 @@ function inputRules({rules}) {
       },
 
       handleKeyDown(view, event) {
-        if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.props.onAction, view.state[propName])
+        if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.props.onAction, plugin.getState(view.state))
         return false
       }
     }
   })
+  return plugin
 }
 exports.inputRules = inputRules
 
