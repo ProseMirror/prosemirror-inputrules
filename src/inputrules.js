@@ -53,7 +53,7 @@ const MAX_MATCH = 100
 // action, and binds the backspace key, when applied directly after an
 // input rule triggered, to undo the rule's effect.
 function inputRules({rules}) {
-  let plugin = new Plugin({
+  return new Plugin({
     state: {
       init() { return null },
       applyAction(action, prev) {
@@ -62,8 +62,6 @@ function inputRules({rules}) {
         return prev
       }
     },
-
-    name: "inputRules",
 
     props: {
       handleTextInput(view, from, to, text) {
@@ -81,12 +79,11 @@ function inputRules({rules}) {
       },
 
       handleKeyDown(view, event) {
-        if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.props.onAction, plugin.getState(view.state))
+        if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.props.onAction, this.getState(view.state))
         return false
       }
     }
   })
-  return plugin
 }
 exports.inputRules = inputRules
 
