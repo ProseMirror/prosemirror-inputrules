@@ -1,11 +1,11 @@
-const {Plugin} = require("prosemirror-state")
+const {Plugin, PluginKey} = require("prosemirror-state")
 
 // ::- Input rules are regular expressions describing a piece of text
 // that, when typed, causes something to happen. This might be
 // changing two dashes into an emdash, wrapping a paragraph starting
 // with `"> "` into a blockquote, or something entirely different.
 class InputRule {
-  // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → ?EditorTransform>)
+  // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → ?Transaction>)
   // Create an input rule. The rule applies when the user typed
   // something and the text directly in front of the cursor matches
   // `match`, which should probably end with `$`.
@@ -18,7 +18,7 @@ class InputRule {
   // array produced by
   // [`RegExp.exec`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec),
   // as well as the start and end of the matched range, and which can
-  // return a [transform](#state.EditorTransform) that describes the
+  // return a [transaction](#state.Transaction) that describes the
   // rule's effect, or null to indicate the input was not handled.
   constructor(match, handler) {
     this.match = match
@@ -47,6 +47,8 @@ function stringHandler(string) {
 
 const MAX_MATCH = 100
 
+const stateKey = new PluginKey("fromInputRule")
+
 // :: (config: {rules: [InputRule]}) → Plugin
 // Create an input rules plugin. When enabled, it will cause text
 // input that matches any of the given rules to trigger the rule's
@@ -56,10 +58,10 @@ function inputRules({rules}) {
   return new Plugin({
     state: {
       init() { return null },
-      applyAction(action, prev) {
-        if (action.type == "transform") return action.fromInputRule
-        if (action.type == "selection") return null
-        return prev
+      apply(tr, prev) {
+        let stored = tr.get(stateKey)
+        if (stored) return stored
+        return tr.selectionSet || tr.steps.length ? null : prev
       }
     },
 
@@ -70,16 +72,16 @@ function inputRules({rules}) {
                                                   null, "\ufffc") + text
         for (let i = 0; i < rules.length; i++) {
           let match = rules[i].match.exec(textBefore)
-          let transform = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
-          if (!transform) continue
-          view.props.onAction(transform.action({fromInputRule: {transform, from, to, text}}))
+          let tr = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
+          if (!tr) continue
+          view.dispatch(tr.set(stateKey, {transform: tr, from, to, text}))
           return true
         }
         return false
       },
 
       handleKeyDown(view, event) {
-        if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.props.onAction, this.getState(view.state))
+        if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.dispatch, this.getState(view.state))
         return false
       }
     }
@@ -87,13 +89,12 @@ function inputRules({rules}) {
 }
 exports.inputRules = inputRules
 
-function maybeUndoInputRule(state, onAction, undoable) {
+function maybeUndoInputRule(state, dispatch, undoable) {
   if (!undoable) return false
   let tr = state.tr, toUndo = undoable.transform
   for (let i = toUndo.steps.length - 1; i >= 0; i--)
     tr.step(toUndo.steps[i].invert(toUndo.docs[i]))
   let marks = tr.doc.marksAt(undoable.from)
-  tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks))
-  onAction(tr.action())
+  dispatch(tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks)))
   return true
 }
