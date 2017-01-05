@@ -40,7 +40,7 @@ function stringHandler(string) {
         start = end
       }
     }
-    let marks = state.doc.marksAt(start)
+    let marks = state.doc.resolve(start).marks()
     return state.tr.replaceWith(start, end, state.schema.text(insert, marks))
   }
 }
@@ -94,7 +94,7 @@ function maybeUndoInputRule(state, dispatch, undoable) {
   let tr = state.tr, toUndo = undoable.transform
   for (let i = toUndo.steps.length - 1; i >= 0; i--)
     tr.step(toUndo.steps[i].invert(toUndo.docs[i]))
-  let marks = tr.doc.marksAt(undoable.from)
+  let marks = tr.doc.resolve(undoable.from).marks()
   dispatch(tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks)))
   return true
 }
