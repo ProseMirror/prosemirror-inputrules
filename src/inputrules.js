@@ -61,7 +61,7 @@ function inputRules({rules}) {
       apply(tr, prev) {
         let stored = tr.get(stateKey)
         if (stored) return stored
-        return tr.selectionSet || tr.steps.length ? null : prev
+        return tr.selectionSet || tr.docChanged ? null : prev
       }
     },
 
