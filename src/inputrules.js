@@ -59,7 +59,7 @@ function inputRules({rules}) {
     state: {
       init() { return null },
       apply(tr, prev) {
-        let stored = tr.get(stateKey)
+        let stored = tr.getMeta(stateKey)
         if (stored) return stored
         return tr.selectionSet || tr.docChanged ? null : prev
       }
@@ -74,7 +74,7 @@ function inputRules({rules}) {
           let match = rules[i].match.exec(textBefore)
           let tr = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
           if (!tr) continue
-          view.dispatch(tr.set(stateKey, {transform: tr, from, to, text}))
+          view.dispatch(tr.setMeta(stateKey, {transform: tr, from, to, text}))
           return true
         }
         return false
