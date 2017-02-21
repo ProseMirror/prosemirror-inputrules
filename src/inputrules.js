@@ -45,16 +45,14 @@ function stringHandler(string) {
   }
 }
 
-const MAX_MATCH = 100
-
 const stateKey = new PluginKey("fromInputRule")
 
-// :: (config: {rules: [InputRule]}) → Plugin
+// :: (config: {rules: [InputRule], maxMatch: ?number}) → Plugin
 // Create an input rules plugin. When enabled, it will cause text
 // input that matches any of the given rules to trigger the rule's
 // action, and binds the backspace key, when applied directly after an
 // input rule triggered, to undo the rule's effect.
-function inputRules({rules}) {
+function inputRules({rules, maxMatch = 100}) {
   return new Plugin({
     state: {
       init() { return null },
@@ -68,7 +66,7 @@ function inputRules({rules}) {
     props: {
       handleTextInput(view, from, to, text) {
         let state = view.state, $from = state.doc.resolve(from)
-        let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
+        let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - maxMatch), $from.parentOffset,
                                                   null, "\ufffc") + text
         for (let i = 0; i < rules.length; i++) {
           let match = rules[i].match.exec(textBefore)
