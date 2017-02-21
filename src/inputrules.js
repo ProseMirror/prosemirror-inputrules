@@ -45,7 +45,7 @@ function stringHandler(string) {
   }
 }
 
-const MAX_MATCH = 100
+const MAX_MATCH = 500
 
 const stateKey = new PluginKey("fromInputRule")
 
