@@ -1,4 +1,4 @@
-const {Plugin, PluginKey} = require("prosemirror-state")
+const {Plugin} = require("prosemirror-state")
 
 // ::- Input rules are regular expressions describing a piece of text
 // that, when typed, causes something to happen. This might be
@@ -47,8 +47,6 @@ function stringHandler(string) {
 
 const MAX_MATCH = 500
 
-const stateKey = new PluginKey("fromInputRule")
-
 // :: (config: {rules: [InputRule]}) → Plugin
 // Create an input rules plugin. When enabled, it will cause text
 // input that matches any of the given rules to trigger the rule's
@@ -59,7 +57,7 @@ function inputRules({rules}) {
     state: {
       init() { return null },
       apply(tr, prev) {
-        let stored = tr.getMeta(stateKey)
+        let stored = tr.getMeta(this)
         if (stored) return stored
         return tr.selectionSet || tr.docChanged ? null : prev
       }
@@ -74,27 +72,36 @@ function inputRules({rules}) {
           let match = rules[i].match.exec(textBefore)
           let tr = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
           if (!tr) continue
-          view.dispatch(tr.setMeta(stateKey, {transform: tr, from, to, text}))
+          view.dispatch(tr.setMeta(this, {transform: tr, from, to, text}))
           return true
         }
         return false
-      },
-
-      handleKeyDown(view, event) {
-        if (event.keyCode == 8) return maybeUndoInputRule(view.state, view.dispatch, this.getState(view.state))
-        return false
       }
-    }
+    },
+
+    isInputRules: true
   })
 }
 exports.inputRules = inputRules
 
-function maybeUndoInputRule(state, dispatch, undoable) {
-  if (!undoable) return false
-  let tr = state.tr, toUndo = undoable.transform
-  for (let i = toUndo.steps.length - 1; i >= 0; i--)
-    tr.step(toUndo.steps[i].invert(toUndo.docs[i]))
-  let marks = tr.doc.resolve(undoable.from).marks()
-  dispatch(tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks)))
-  return true
+// :: (EditorState, ?(Transaction)) → bool
+// Command that will undo an input rule, if it applied to the last
+// thing that the user did.
+function undoInputRule(state, dispatch) {
+  let plugins = state.plugins
+  for (let i = 0; i < plugins.length; i++) {
+    let plugin = plugins[i], undoable
+    if (plugin.spec.isInputRules && (undoable = plugin.getState(state))) {
+      if (dispatch) {
+        let tr = state.tr, toUndo = undoable.transform
+        for (let j = toUndo.steps.length - 1; j >= 0; j--)
+          tr.step(toUndo.steps[j].invert(toUndo.docs[j]))
+        let marks = tr.doc.resolve(undoable.from).marks()
+        dispatch(tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks)))
+      }
+      return true
+    }
+  }
+  return false
 }
+exports.undoInputRule = undoInputRule

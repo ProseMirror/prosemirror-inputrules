@@ -1,4 +1,5 @@
-;({InputRule: exports.InputRule, inputRules: exports.inputRules} = require("./inputrules"))
+;({InputRule: exports.InputRule, inputRules: exports.inputRules,
+   undoInputRule: exports.undoInputRule} = require("./inputrules"))
 ;({emDash: exports.emDash, ellipsis: exports.ellipsis, openDoubleQuote: exports.openDoubleQuote,
    closeDoubleQuote: exports.closeDoubleQuote, openSingleQuote: exports.openSingleQuote,
    closeSingleQuote: exports.closeSingleQuote, smartQuotes: exports.smartQuotes, allInputRules: exports.allInputRules} = require("./rules"))

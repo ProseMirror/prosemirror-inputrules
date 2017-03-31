@@ -4,6 +4,7 @@ with a bunch of default rules that can be enabled in this plugin.
 
 @InputRule
 @inputRules
+@undoInputRule
 
 The module comes with a number of predefined rules:
 
