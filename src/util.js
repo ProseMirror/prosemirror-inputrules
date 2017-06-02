@@ -57,7 +57,7 @@ exports.textblockTypeInputRule = textblockTypeInputRule
 // Given a blockquote node type, returns an input rule that turns `"> "`
 // at the start of a textblock into a blockquote.
 function blockQuoteRule(nodeType) {
-  return wrappingInputRule(/^\s*> $/, nodeType)
+  return wrappingInputRule(/^\s*>\s$/, nodeType)
 }
 exports.blockQuoteRule = blockQuoteRule
 
@@ -65,7 +65,7 @@ exports.blockQuoteRule = blockQuoteRule
 // Given a list node type, returns an input rule that turns a number
 // followed by a dot at the start of a textblock into an ordered list.
 function orderedListRule(nodeType) {
-  return wrappingInputRule(/^(\d+)\. $/, nodeType, match => ({order: +match[1]}),
+  return wrappingInputRule(/^(\d+)\.\s$/, nodeType, match => ({order: +match[1]}),
                            (match, node) => node.childCount + node.attrs.order == +match[1])
 }
 exports.orderedListRule = orderedListRule
@@ -75,7 +75,7 @@ exports.orderedListRule = orderedListRule
 // (dash, plush, or asterisk) at the start of a textblock into a
 // bullet list.
 function bulletListRule(nodeType) {
-  return wrappingInputRule(/^\s*([-+*]) $/, nodeType)
+  return wrappingInputRule(/^\s*([-+*])\s$/, nodeType)
 }
 exports.bulletListRule = bulletListRule
 
@@ -93,7 +93,7 @@ exports.codeBlockRule = codeBlockRule
 // the start of a textblock into a heading whose level corresponds to
 // the number of `#` signs.
 function headingRule(nodeType, maxLevel) {
-  return textblockTypeInputRule(new RegExp("^(#{1," + maxLevel + "}) $"),
+  return textblockTypeInputRule(new RegExp("^(#{1," + maxLevel + "})\\s$"),
                                 nodeType, match => ({level: match[1].length}))
 }
 exports.headingRule = headingRule
