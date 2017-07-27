@@ -6,4 +6,4 @@
 ;({wrappingInputRule: exports.wrappingInputRule, textblockTypeInputRule: exports.textblockTypeInputRule,
    blockQuoteRule: exports.blockQuoteRule, orderedListRule: exports.orderedListRule,
    bulletListRule: exports.bulletListRule, codeBlockRule: exports.codeBlockRule, headingRule: exports.headingRule}
-  = require("./util"))
+  = require("./rulebuilders"))
