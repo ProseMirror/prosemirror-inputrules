@@ -1,5 +1,5 @@
-const {InputRule} = require("./inputrules")
-const {findWrapping, canJoin} = require("prosemirror-transform")
+import {InputRule} from "./inputrules"
+import {findWrapping, canJoin} from "prosemirror-transform"
 
 // :: (RegExp, NodeType, ?union<Object, ([string]) → ?Object>, ?([string], Node) → bool) → InputRule
 // Build an input rule for automatically wrapping a textblock when a
@@ -17,7 +17,7 @@ const {findWrapping, canJoin} = require("prosemirror-transform")
 // two nodes. You can pass a join predicate, which takes a regular
 // expression match and the node before the wrapped node, and can
 // return a boolean to indicate whether a join should happen.
-function wrappingInputRule(regexp, nodeType, getAttrs, joinPredicate) {
+export function wrappingInputRule(regexp, nodeType, getAttrs, joinPredicate) {
   return new InputRule(regexp, (state, match, start, end) => {
     let attrs = getAttrs instanceof Function ? getAttrs(match) : getAttrs
     let tr = state.tr.delete(start, end)
@@ -31,7 +31,6 @@ function wrappingInputRule(regexp, nodeType, getAttrs, joinPredicate) {
     return tr
   })
 }
-exports.wrappingInputRule = wrappingInputRule
 
 // :: (RegExp, NodeType, ?union<Object, ([string]) → ?Object>) → InputRule
 // Build an input rule that changes the type of a textblock when the
@@ -40,7 +39,7 @@ exports.wrappingInputRule = wrappingInputRule
 // textblock. The optional `getAttrs` parameter can be used to compute
 // the new node's attributes, and works the same as in the
 // `wrappingInputRule` function.
-function textblockTypeInputRule(regexp, nodeType, getAttrs) {
+export function textblockTypeInputRule(regexp, nodeType, getAttrs) {
   return new InputRule(regexp, (state, match, start, end) => {
     let $start = state.doc.resolve(start)
     let attrs = getAttrs instanceof Function ? getAttrs(match) : getAttrs
@@ -50,50 +49,44 @@ function textblockTypeInputRule(regexp, nodeType, getAttrs) {
       .setBlockType(start, start, nodeType, attrs)
   })
 }
-exports.textblockTypeInputRule = textblockTypeInputRule
 
 
 // :: (NodeType) → InputRule
 // Given a blockquote node type, returns an input rule that turns `"> "`
 // at the start of a textblock into a blockquote.
-function blockQuoteRule(nodeType) {
+export function blockQuoteRule(nodeType) {
   return wrappingInputRule(/^\s*>\s$/, nodeType)
 }
-exports.blockQuoteRule = blockQuoteRule
 
 // :: (NodeType) → InputRule
 // Given a list node type, returns an input rule that turns a number
 // followed by a dot at the start of a textblock into an ordered list.
-function orderedListRule(nodeType) {
+export function orderedListRule(nodeType) {
   return wrappingInputRule(/^(\d+)\.\s$/, nodeType, match => ({order: +match[1]}),
                            (match, node) => node.childCount + node.attrs.order == +match[1])
 }
-exports.orderedListRule = orderedListRule
 
 // :: (NodeType) → InputRule
 // Given a list node type, returns an input rule that turns a bullet
 // (dash, plush, or asterisk) at the start of a textblock into a
 // bullet list.
-function bulletListRule(nodeType) {
+export function bulletListRule(nodeType) {
   return wrappingInputRule(/^\s*([-+*])\s$/, nodeType)
 }
-exports.bulletListRule = bulletListRule
 
 // :: (NodeType) → InputRule
 // Given a code block node type, returns an input rule that turns a
 // textblock starting with three backticks into a code block.
-function codeBlockRule(nodeType) {
+export function codeBlockRule(nodeType) {
   return textblockTypeInputRule(/^```$/, nodeType)
 }
-exports.codeBlockRule = codeBlockRule
 
 // :: (NodeType, number) → InputRule
 // Given a node type and a maximum level, creates an input rule that
 // turns up to that number of `#` characters followed by a space at
 // the start of a textblock into a heading whose level corresponds to
 // the number of `#` signs.
-function headingRule(nodeType, maxLevel) {
+export function headingRule(nodeType, maxLevel) {
   return textblockTypeInputRule(new RegExp("^(#{1," + maxLevel + "})\\s$"),
                                 nodeType, match => ({level: match[1].length}))
 }
-exports.headingRule = headingRule

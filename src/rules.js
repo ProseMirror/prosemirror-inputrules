@@ -1,28 +1,20 @@
-const {InputRule} = require("./inputrules")
+import {InputRule} from "./inputrules"
 
 // :: InputRule Converts double dashes to an emdash.
-const emDash = new InputRule(/--$/, "—")
-exports.emDash = emDash
+export const emDash = new InputRule(/--$/, "—")
 // :: InputRule Converts three dots to an ellipsis character.
-const ellipsis = new InputRule(/\.\.\.$/, "…")
-exports.ellipsis = ellipsis
+export const ellipsis = new InputRule(/\.\.\.$/, "…")
 // :: InputRule “Smart” opening double quotes.
-const openDoubleQuote = new InputRule(/(?:^|[\s\{\[\(\<'"\u2018\u201C])(")$/, "“")
-exports.openDoubleQuote = openDoubleQuote
+export const openDoubleQuote = new InputRule(/(?:^|[\s\{\[\(\<'"\u2018\u201C])(")$/, "“")
 // :: InputRule “Smart” closing double quotes.
-const closeDoubleQuote = new InputRule(/"$/, "”")
-exports.closeDoubleQuote = closeDoubleQuote
+export const closeDoubleQuote = new InputRule(/"$/, "”")
 // :: InputRule “Smart” opening single quotes.
-const openSingleQuote = new InputRule(/(?:^|[\s\{\[\(\<'"\u2018\u201C])(')$/, "‘")
-exports.openSingleQuote = openSingleQuote
+export const openSingleQuote = new InputRule(/(?:^|[\s\{\[\(\<'"\u2018\u201C])(')$/, "‘")
 // :: InputRule “Smart” closing single quotes.
-const closeSingleQuote = new InputRule(/'$/, "’")
-exports.closeSingleQuote = closeSingleQuote
+export const closeSingleQuote = new InputRule(/'$/, "’")
 
 // :: [InputRule] Smart-quote related input rules.
-const smartQuotes = [openDoubleQuote, closeDoubleQuote, openSingleQuote, closeSingleQuote]
-exports.smartQuotes = smartQuotes
+export const smartQuotes = [openDoubleQuote, closeDoubleQuote, openSingleQuote, closeSingleQuote]
 
 // :: [InputRule] All schema-independent input rules defined in this module.
-const allInputRules = [emDash, ellipsis].concat(smartQuotes)
-exports.allInputRules = allInputRules
+export const allInputRules = [emDash, ellipsis].concat(smartQuotes)

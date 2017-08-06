@@ -1,10 +1,10 @@
-const {Plugin} = require("prosemirror-state")
+import {Plugin} from "prosemirror-state"
 
 // ::- Input rules are regular expressions describing a piece of text
 // that, when typed, causes something to happen. This might be
 // changing two dashes into an emdash, wrapping a paragraph starting
 // with `"> "` into a blockquote, or something entirely different.
-class InputRule {
+export class InputRule {
   // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → ?Transaction>)
   // Create an input rule. The rule applies when the user typed
   // something and the text directly in front of the cursor matches
@@ -25,7 +25,6 @@ class InputRule {
     this.handler = typeof handler == "string" ? stringHandler(handler) : handler
   }
 }
-exports.InputRule = InputRule
 
 function stringHandler(string) {
   return function(state, match, start, end) {
@@ -52,7 +51,7 @@ const MAX_MATCH = 500
 // input that matches any of the given rules to trigger the rule's
 // action, and binds the backspace key, when applied directly after an
 // input rule triggered, to undo the rule's effect.
-function inputRules({rules}) {
+export function inputRules({rules}) {
   return new Plugin({
     state: {
       init() { return null },
@@ -82,12 +81,11 @@ function inputRules({rules}) {
     isInputRules: true
   })
 }
-exports.inputRules = inputRules
 
 // :: (EditorState, ?(Transaction)) → bool
 // Command that will undo an input rule, if it applied to the last
 // thing that the user did.
-function undoInputRule(state, dispatch) {
+export function undoInputRule(state, dispatch) {
   let plugins = state.plugins
   for (let i = 0; i < plugins.length; i++) {
     let plugin = plugins[i], undoable
@@ -104,4 +102,3 @@ function undoInputRule(state, dispatch) {
   }
   return false
 }
-exports.undoInputRule = undoInputRule
