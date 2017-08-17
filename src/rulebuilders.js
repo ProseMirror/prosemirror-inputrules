@@ -43,7 +43,7 @@ export function textblockTypeInputRule(regexp, nodeType, getAttrs) {
   return new InputRule(regexp, (state, match, start, end) => {
     let $start = state.doc.resolve(start)
     let attrs = getAttrs instanceof Function ? getAttrs(match) : getAttrs
-    if (!$start.node(-1).canReplaceWith($start.index(-1), $start.indexAfter(-1), nodeType, attrs)) return null
+    if (!$start.node(-1).canReplaceWith($start.index(-1), $start.indexAfter(-1), nodeType)) return null
     return state.tr
       .delete(start, end)
       .setBlockType(start, start, nodeType, attrs)
