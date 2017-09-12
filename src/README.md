@@ -1,4 +1,4 @@
-This module defines a plugin for attaching ‘input rules’ to an editor,
+This module defines a plugin for attaching _input rules_ to an editor,
 which can react to or transform text typed by the user. It also comes
 with a bunch of default rules that can be enabled in this plugin.
 

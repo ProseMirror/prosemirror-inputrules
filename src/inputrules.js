@@ -11,7 +11,7 @@ export class InputRule {
   // `match`, which should probably end with `$`.
   //
   // The `handler` can be a string, in which case the matched text, or
-  // the first matched group in the regexp, simply be replaced by that
+  // the first matched group in the regexp, is replaced by that
   // string.
   //
   // Or a it can be a function, which will be called with the match
@@ -49,8 +49,7 @@ const MAX_MATCH = 500
 // :: (config: {rules: [InputRule]}) → Plugin
 // Create an input rules plugin. When enabled, it will cause text
 // input that matches any of the given rules to trigger the rule's
-// action, and binds the backspace key, when applied directly after an
-// input rule triggered, to undo the rule's effect.
+// action.
 export function inputRules({rules}) {
   return new Plugin({
     state: {
@@ -83,8 +82,8 @@ export function inputRules({rules}) {
 }
 
 // :: (EditorState, ?(Transaction)) → bool
-// Command that will undo an input rule, if it applied to the last
-// thing that the user did.
+// This is a command that will undo an input rule, if applying such a
+// rule was the last thing that the user did.
 export function undoInputRule(state, dispatch) {
   let plugins = state.plugins
   for (let i = 0; i < plugins.length; i++) {
