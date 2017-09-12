@@ -15,6 +15,3 @@ export const closeSingleQuote = new InputRule(/'$/, "’")
 
 // :: [InputRule] Smart-quote related input rules.
 export const smartQuotes = [openDoubleQuote, closeDoubleQuote, openSingleQuote, closeSingleQuote]
-
-// :: [InputRule] All schema-independent input rules defined in this module.
-export const allInputRules = [emDash, ellipsis].concat(smartQuotes)

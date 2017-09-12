@@ -15,15 +15,9 @@ The module comes with a number of predefined rules:
 @openSingleQuote
 @closeSingleQuote
 @smartQuotes
-@allInputRules
 
 These utility functions take schema-specific parameters and create
 input rules specific to that schema.
 
 @wrappingInputRule
 @textblockTypeInputRule
-@blockQuoteRule
-@orderedListRule
-@bulletListRule
-@codeBlockRule
-@headingRule
