@@ -64,6 +64,7 @@ export function inputRules({rules}) {
     props: {
       handleTextInput(view, from, to, text) {
         let state = view.state, $from = state.doc.resolve(from)
+        if ($from.parent.type.spec.code) return false
         let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
                                                   null, "\ufffc") + text
         for (let i = 0; i < rules.length; i++) {
