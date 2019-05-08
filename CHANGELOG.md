@@ -1,3 +1,9 @@
+## 1.0.2 (2019-05-08)
+
+### Bug fixes
+
+Improve selection handling during text replacement.
+
 ## 1.0.1 (2017-11-10)
 
 ### Bug fixes
