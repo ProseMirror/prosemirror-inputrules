@@ -39,8 +39,7 @@ function stringHandler(string) {
         start = end
       }
     }
-    let marks = state.doc.resolve(start).marks()
-    return state.tr.replaceWith(start, end, state.schema.text(insert, marks))
+    return state.tr.insertText(insert, start, end)
   }
 }
 
