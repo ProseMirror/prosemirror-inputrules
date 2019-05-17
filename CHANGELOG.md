@@ -1,3 +1,9 @@
+## 1.0.4 (2019-05-17)
+
+### Bug fixes
+
+Fix a null-dereference when running in strict mode.
+
 ## 1.0.3 (2019-05-17)
 
 ### Bug fixes
