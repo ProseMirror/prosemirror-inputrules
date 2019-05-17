@@ -1,3 +1,9 @@
+## 1.0.3 (2019-05-17)
+
+### Bug fixes
+
+Prevent input rules from running during compositions, since they will annoyingly interrupt them.
+
 ## 1.0.2 (2019-05-08)
 
 ### Bug fixes
