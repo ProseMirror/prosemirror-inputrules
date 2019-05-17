@@ -62,23 +62,36 @@ export function inputRules({rules}) {
 
     props: {
       handleTextInput(view, from, to, text) {
-        let state = view.state, $from = state.doc.resolve(from)
-        if ($from.parent.type.spec.code) return false
-        let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
-                                                  null, "\ufffc") + text
-        for (let i = 0; i < rules.length; i++) {
-          let match = rules[i].match.exec(textBefore)
-          let tr = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
-          if (!tr) continue
-          view.dispatch(tr.setMeta(this, {transform: tr, from, to, text}))
-          return true
+        return run(view, from, to, text, rules, this)
+      },
+      handleDOMEvents: {
+        compositionend: (view) => {
+          setTimeout(() => {
+            let {$cursor} = view.state.selection
+            if ($cursor) run(view, $cursor.pos, $cursor.pos, "", rules, this)
+          })
         }
-        return false
       }
     },
 
     isInputRules: true
   })
+}
+
+function run(view, from, to, text, rules, plugin) {
+  if (view.composing) return false
+  let state = view.state, $from = state.doc.resolve(from)
+  if ($from.parent.type.spec.code) return false
+  let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
+                                            null, "\ufffc") + text
+  for (let i = 0; i < rules.length; i++) {
+    let match = rules[i].match.exec(textBefore)
+    let tr = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
+    if (!tr) continue
+    view.dispatch(tr.setMeta(plugin, {transform: tr, from, to, text}))
+    return true
+  }
+  return false
 }
 
 // :: (EditorState, ?(Transaction)) → bool
