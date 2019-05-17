@@ -50,7 +50,7 @@ const MAX_MATCH = 500
 // input that matches any of the given rules to trigger the rule's
 // action.
 export function inputRules({rules}) {
-  return new Plugin({
+  let plugin = new Plugin({
     state: {
       init() { return null },
       apply(tr, prev) {
@@ -62,13 +62,13 @@ export function inputRules({rules}) {
 
     props: {
       handleTextInput(view, from, to, text) {
-        return run(view, from, to, text, rules, this)
+        return run(view, from, to, text, rules, plugin)
       },
       handleDOMEvents: {
         compositionend: (view) => {
           setTimeout(() => {
             let {$cursor} = view.state.selection
-            if ($cursor) run(view, $cursor.pos, $cursor.pos, "", rules, this)
+            if ($cursor) run(view, $cursor.pos, $cursor.pos, "", rules, plugin)
           })
         }
       }
@@ -76,6 +76,7 @@ export function inputRules({rules}) {
 
     isInputRules: true
   })
+  return plugin
 }
 
 function run(view, from, to, text, rules, plugin) {
