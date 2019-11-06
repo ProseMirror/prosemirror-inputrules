@@ -3,6 +3,7 @@
   "version": "1.0.4",
   "description": "Automatic transforms on text input for ProseMirror",
   "main": "dist/index.js",
+  "module": "src/index.js",
   "license": "MIT",
   "maintainers": [
     {
