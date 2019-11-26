@@ -56,11 +56,11 @@ Input rules with spaces in them now match any whitespace where the space is expe
 
 ### Breaking changes
 
-The input rules [plugin](http://prosemirror.net/docs/ref/version/0.20.0.html#inputrules.inputRules) no longer implicitly binds backspace to undo the last applied rule.
+The input rules [plugin](https://prosemirror.net/docs/ref/version/0.20.0.html#inputrules.inputRules) no longer implicitly binds backspace to undo the last applied rule.
 
 ### New features
 
-This module now exposes a command [`undoInputRule`](http://prosemirror.net/docs/ref/version/0.20.0.html#inputrules.undoInputRule), which will revert an input rule when run directly after one was applied.
+This module now exposes a command [`undoInputRule`](https://prosemirror.net/docs/ref/version/0.20.0.html#inputrules.undoInputRule), which will revert an input rule when run directly after one was applied.
 
 ## 0.11.0 (2016-09-21)
 
@@ -72,8 +72,8 @@ You can now add this plugin multiple times to add different sets of
 rules to an editor (if you want). It is not possible to change the set
 of rules of an existing plugin instance.
 
-[Rules](http://prosemirror.net/docs/ref/version/0.11.0.html#inputrules.InputRule) no longer take a `filter` argument.
+[Rules](https://prosemirror.net/docs/ref/version/0.11.0.html#inputrules.InputRule) no longer take a `filter` argument.
 
 The signature of the `handler` callback for a
-[rule](http://prosemirror.net/docs/ref/version/0.11.0.html#inputrules.InputRule) changed.
+[rule](https://prosemirror.net/docs/ref/version/0.11.0.html#inputrules.InputRule) changed.
 
