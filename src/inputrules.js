@@ -56,7 +56,7 @@ export function inputRules({rules}) {
       apply(tr, prev) {
         let stored = tr.getMeta(this)
         if (stored) return stored
-        return tr.selectionSet || tr.docChanged ? null : prev
+        return (tr.selectionSet || tr.docChanged) && tr.getMeta('addToHistory') !== false ? null : prev
       }
     },
 
