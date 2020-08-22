@@ -87,8 +87,11 @@ function run(view, from, to, text, rules, plugin) {
                                             null, "\ufffc") + text
   for (let i = 0; i < rules.length; i++) {
     let match = rules[i].match.exec(textBefore)
-    let tr = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
-    if (!tr) continue
+    if (!match) continue;
+    let handleFrom =
+      from + text.length - match.input.length + match.index;
+    let handleTo = to < handleFrom + match[0].length ? to : handleFrom + match[0].length;
+    let tr = rules[i].handler(state, match, handleFrom, handleTo)
     view.dispatch(tr.setMeta(plugin, {transform: tr, from, to, text}))
     return true
   }
