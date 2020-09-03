@@ -8,7 +8,7 @@ export class InputRule {
   // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → ?Transaction>)
   // Create an input rule. The rule applies when the user typed
   // something and the text directly in front of the cursor matches
-  // `match`, which should probably end with `$`.
+  // `match`, which should end with `$`.
   //
   // The `handler` can be a string, in which case the matched text, or
   // the first matched group in the regexp, is replaced by that
