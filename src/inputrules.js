@@ -107,8 +107,13 @@ export function undoInputRule(state, dispatch) {
         let tr = state.tr, toUndo = undoable.transform
         for (let j = toUndo.steps.length - 1; j >= 0; j--)
           tr.step(toUndo.steps[j].invert(toUndo.docs[j]))
-        let marks = tr.doc.resolve(undoable.from).marks()
-        dispatch(tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks)))
+        if (undoable.text) {
+          let marks = tr.doc.resolve(undoable.from).marks()
+          tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks))
+        } else {
+          tr.delete(undoable.from, undoable.to)
+        }
+        dispatch(tr)
       }
       return true
     }
