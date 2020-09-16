@@ -1,3 +1,9 @@
+## 1.1.3 (2020-09-16)
+
+### Bug fixes
+
+Fix crash when undoing input rules when the rule was triggered without inserting text.
+
 ## 1.1.2 (2019-11-20)
 
 ### Bug fixes
