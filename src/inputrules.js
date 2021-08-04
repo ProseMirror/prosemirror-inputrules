@@ -71,6 +71,12 @@ export function inputRules({rules}) {
             if ($cursor) run(view, $cursor.pos, $cursor.pos, "", rules, plugin)
           })
         }
+      },
+      handleKeyDown(view, event) {
+        if (event.key !== "Enter") return false;
+        let {$cursor} = view.state.selection
+        if ($cursor) return run(view, $cursor.pos, $cursor.pos, "\n", rules, plugin)
+        return false;
       }
     },
 
