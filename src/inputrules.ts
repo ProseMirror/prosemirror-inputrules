@@ -57,10 +57,10 @@ const MAX_MATCH = 500
 /// input that matches any of the given rules to trigger the rule's
 /// action.
 export function inputRules({rules}: {rules: readonly InputRule[]}) {
-  let plugin: Plugin = new Plugin({
+  let plugin: Plugin<{transform: Transaction, from: number, to: number, text: string} | null> = new Plugin({
     state: {
       init() { return null },
-      apply(this: Plugin, tr, prev) {
+      apply(this: typeof plugin, tr, prev) {
         let stored = tr.getMeta(this)
         if (stored) return stored
         return tr.selectionSet || tr.docChanged ? null : prev
@@ -81,7 +81,6 @@ export function inputRules({rules}: {rules: readonly InputRule[]}) {
       }
     },
 
-    // @ts-ignore
     isInputRules: true
   })
   return plugin
