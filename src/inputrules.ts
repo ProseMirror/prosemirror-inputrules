@@ -53,11 +53,13 @@ function stringHandler(string: string) {
 
 const MAX_MATCH = 500
 
+type PluginState = {transform: Transaction, from: number, to: number, text: string} | null
+
 /// Create an input rules plugin. When enabled, it will cause text
 /// input that matches any of the given rules to trigger the rule's
 /// action.
 export function inputRules({rules}: {rules: readonly InputRule[]}) {
-  let plugin: Plugin<{transform: Transaction, from: number, to: number, text: string} | null> = new Plugin({
+  let plugin: Plugin<PluginState> = new Plugin<PluginState>({
     state: {
       init() { return null },
       apply(this: typeof plugin, tr, prev) {
