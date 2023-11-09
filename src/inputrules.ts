@@ -9,6 +9,9 @@ export class InputRule {
   /// @internal
   handler: (state: EditorState, match: RegExpMatchArray, start: number, end: number) => Transaction | null
 
+  /// @internal
+  undoable: boolean
+
   // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → ?Transaction>)
   /// Create an input rule. The rule applies when the user typed
   /// something and the text directly in front of the cursor matches
@@ -27,10 +30,17 @@ export class InputRule {
   constructor(
     /// @internal
     readonly match: RegExp,
-    handler: string | ((state: EditorState, match: RegExpMatchArray, start: number, end: number) => Transaction | null)
+    handler: string | ((state: EditorState, match: RegExpMatchArray, start: number, end: number) => Transaction | null),
+    options: {
+      /// When set to false,
+      /// [`undoInputRule`](#inputrules.undoInputRule) doesn't work on
+      /// this rule.
+      undoable?: boolean
+    } = {}
   ) {
     this.match = match
     this.handler = typeof handler == "string" ? stringHandler(handler) : handler
+    this.undoable = options.undoable !== false
   }
 }
 
@@ -95,10 +105,11 @@ function run(view: EditorView, from: number, to: number, text: string, rules: re
   let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
                                             null, "\ufffc") + text
   for (let i = 0; i < rules.length; i++) {
-    let match = rules[i].match.exec(textBefore)
-    let tr = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
+    let rule = rules[i], match = rule.match.exec(textBefore)
+    let tr = match && rule.handler(state, match, from - (match[0].length - text.length), to)
     if (!tr) continue
-    view.dispatch(tr.setMeta(plugin, {transform: tr, from, to, text}))
+    if (rule.undoable) tr.setMeta(plugin, {transform: tr, from, to, text})
+    view.dispatch(tr)
     return true
   }
   return false
