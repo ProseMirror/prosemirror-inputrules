@@ -1,3 +1,9 @@
+## 1.3.0 (2023-11-16)
+
+### New features
+
+Input rules can now be set to be non-undoable, preventing `undoInputRule` from rolling them back.
+
 ## 1.2.1 (2023-05-17)
 
 ### Bug fixes
