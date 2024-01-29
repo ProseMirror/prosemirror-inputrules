@@ -11,7 +11,7 @@ export class InputRule {
 
   /// @internal
   undoable: boolean
-  inCode?: 'allowed' | 'only';
+  inCode?: boolean | 'only';
 
   // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → ?Transaction>)
   /// Create an input rule. The rule applies when the user typed
@@ -36,11 +36,11 @@ export class InputRule {
       /// When set to false,
       /// [`undoInputRule`](#inputrules.undoInputRule) doesn't work on
       /// this rule.
-      undoable?: 'boolean',
+      undoable?: boolean,
       /// When set to 'allowed', the rule applies to both code and non-code blocks
       /// When set to 'only', the rule only applies to code blocks
       /// otherwise the rule only applies to non-code blocks
-      inCode?: 'allowed' | 'only';
+      inCode?: boolean | 'only';
     } = {}
   ) {
     this.match = match
