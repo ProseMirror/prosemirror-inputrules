@@ -11,6 +11,7 @@ export class InputRule {
 
   /// @internal
   undoable: boolean
+  inCode?: boolean | 'only';
 
   // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → ?Transaction>)
   /// Create an input rule. The rule applies when the user typed
@@ -35,12 +36,17 @@ export class InputRule {
       /// When set to false,
       /// [`undoInputRule`](#inputrules.undoInputRule) doesn't work on
       /// this rule.
-      undoable?: boolean
+      undoable?: boolean,
+      /// When set to 'allowed', the rule applies to both code and non-code blocks
+      /// When set to 'only', the rule only applies to code blocks
+      /// otherwise the rule only applies to non-code blocks
+      inCode?: boolean | 'only';
     } = {}
   ) {
     this.match = match
     this.handler = typeof handler == "string" ? stringHandler(handler) : handler
     this.undoable = options.undoable !== false
+    this.inCode = options.inCode
   }
 }
 
@@ -101,11 +107,16 @@ export function inputRules({rules}: {rules: readonly InputRule[]}) {
 function run(view: EditorView, from: number, to: number, text: string, rules: readonly InputRule[], plugin: Plugin) {
   if (view.composing) return false
   let state = view.state, $from = state.doc.resolve(from)
-  if ($from.parent.type.spec.code) return false
   let textBefore = $from.parent.textBetween(Math.max(0, $from.parentOffset - MAX_MATCH), $from.parentOffset,
                                             null, "\ufffc") + text
   for (let i = 0; i < rules.length; i++) {
-    let rule = rules[i], match = rule.match.exec(textBefore)
+    let rule = rules[i];
+    if ($from.parent.type.spec.code) {
+      if (!rule.inCode) continue; // skip rules that don't target code blocks 
+    } else if (rule.inCode === 'only') {
+      continue;// skip inCode rules for non code blocks
+    }
+    let match = rule.match.exec(textBefore)
     let tr = match && rule.handler(state, match, from - (match[0].length - text.length), to)
     if (!tr) continue
     if (rule.undoable) tr.setMeta(plugin, {transform: tr, from, to, text})
