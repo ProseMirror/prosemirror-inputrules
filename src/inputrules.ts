@@ -11,7 +11,7 @@ export class InputRule {
 
   /// @internal
   undoable: boolean
-  inCode?: boolean | 'only';
+  inCode: boolean | "only"
 
   // :: (RegExp, union<string, (state: EditorState, match: [string], start: number, end: number) → ?Transaction>)
   /// Create an input rule. The rule applies when the user typed
@@ -37,16 +37,16 @@ export class InputRule {
       /// [`undoInputRule`](#inputrules.undoInputRule) doesn't work on
       /// this rule.
       undoable?: boolean,
-      /// When set to 'allowed', the rule applies to both code and non-code blocks
-      /// When set to 'only', the rule only applies to code blocks
-      /// otherwise the rule only applies to non-code blocks
-      inCode?: boolean | 'only';
+      /// By default, input rules will not apply inside nodes marked
+      /// as [code](#model.NodeSpec.code). Set this to true to change
+      /// that, or to `"only"` to _only_ match in such nodes.
+      inCode?: boolean | "only"
     } = {}
   ) {
     this.match = match
     this.handler = typeof handler == "string" ? stringHandler(handler) : handler
     this.undoable = options.undoable !== false
-    this.inCode = options.inCode
+    this.inCode = options.inCode || false
   }
 }
 
@@ -112,9 +112,9 @@ function run(view: EditorView, from: number, to: number, text: string, rules: re
   for (let i = 0; i < rules.length; i++) {
     let rule = rules[i];
     if ($from.parent.type.spec.code) {
-      if (!rule.inCode) continue; // skip rules that don't target code blocks 
-    } else if (rule.inCode === 'only') {
-      continue;// skip inCode rules for non code blocks
+      if (!rule.inCode) continue
+    } else if (rule.inCode === "only") {
+      continue
     }
     let match = rule.match.exec(textBefore)
     let tr = match && rule.handler(state, match, from - (match[0].length - text.length), to)
