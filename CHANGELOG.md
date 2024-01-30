@@ -1,3 +1,9 @@
+## 1.4.0 (2024-01-30)
+
+### New features
+
+Input rules now take an `inCode` option that controls whether they should apply inside nodes marked as code.
+
 ## 1.3.0 (2023-11-16)
 
 ### New features
