@@ -116,7 +116,8 @@ function run(view: EditorView, from: number, to: number, text: string, rules: re
       continue
     }
     let match = rule.match.exec(textBefore)
-    let tr = match && rule.handler(state, match, from - (match[0].length - text.length), to)
+    let tr = match && match[0].length >= text.length &&
+      rule.handler(state, match, from - (match[0].length - text.length), to)
     if (!tr) continue
     if (rule.undoable) tr.setMeta(plugin, {transform: tr, from, to, text})
     view.dispatch(tr)
