@@ -12,6 +12,7 @@ export class InputRule {
   /// @internal
   undoable: boolean
   inCode: boolean | "only"
+  inCodeMark: boolean | "only"
 
   /// Create an input rule. The rule applies when the user typed
   /// something and the text directly in front of the cursor matches
@@ -40,12 +41,17 @@ export class InputRule {
       /// as [code](#model.NodeSpec.code). Set this to true to change
       /// that, or to `"only"` to _only_ match in such nodes.
       inCode?: boolean | "only"
+      /// When set to `false`, this rule will not fire inside marks
+      /// marked as [code](#model.MarkSpec.code). The default is
+      /// `true`.
+      inCodeMark?: boolean
     } = {}
   ) {
     this.match = match
     this.handler = typeof handler == "string" ? stringHandler(handler) : handler
     this.undoable = options.undoable !== false
     this.inCode = options.inCode || false
+    this.inCodeMark = options.inCodeMark !== false
   }
 }
 
@@ -110,6 +116,7 @@ function run(view: EditorView, from: number, to: number, text: string, rules: re
                                             null, "\ufffc") + text
   for (let i = 0; i < rules.length; i++) {
     let rule = rules[i];
+    if (!rule.inCodeMark && $from.marks().some(m => m.type.spec.code)) continue
     if ($from.parent.type.spec.code) {
       if (!rule.inCode) continue
     } else if (rule.inCode === "only") {
