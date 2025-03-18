@@ -1,3 +1,15 @@
+## 1.5.0 (2025-03-18)
+
+### Bug fixes
+
+Fix a bug where input rules behaved incorrectly when text input inserted multiple characters and only a part of those were matched by a rule.
+
+Set `inCodeMark` to false for emdash and quote input rules.
+
+### New features
+
+Input rules now take an `inCodeMark` option that can be used to turn them off inside marks marked as code.
+
 ## 1.4.0 (2024-01-30)
 
 ### New features
