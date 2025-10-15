@@ -123,8 +123,16 @@ function run(view: EditorView, from: number, to: number, text: string, rules: re
       continue
     }
     let match = rule.match.exec(textBefore)
-    let tr = match && match[0].length >= text.length &&
-      rule.handler(state, match, from - (match[0].length - text.length), to)
+    if (!match || match[0].length < text.length) continue
+    let startPos = from - (match[0].length - text.length)
+    if (!rule.inCodeMark) {
+      let hasMark = false
+      state.doc.nodesBetween(startPos, $from.pos, node => {
+        if (node.isInline && node.marks.some(m => m.type.spec.code)) hasMark = true
+      })
+      if (hasMark) continue
+    }
+    let tr = rule.handler(state, match, startPos, to)
     if (!tr) continue
     if (rule.undoable) tr.setMeta(plugin, {transform: tr, from, to, text})
     view.dispatch(tr)
