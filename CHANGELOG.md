@@ -1,3 +1,9 @@
+## 1.5.1 (2025-10-15)
+
+### Bug fixes
+
+Fix an issue where input rules with `inCodeMark` disabled would still match if a part of the match before the cursor had a code mark.
+
 ## 1.5.0 (2025-03-18)
 
 ### Bug fixes

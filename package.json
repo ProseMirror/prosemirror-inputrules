@@ -1,6 +1,6 @@
 {
   "name": "prosemirror-inputrules",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Automatic transforms on text input for ProseMirror",
   "type": "module",
   "main": "dist/index.cjs",
