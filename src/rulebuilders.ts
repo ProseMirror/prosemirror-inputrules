@@ -39,7 +39,7 @@ export function wrappingInputRule(
 
 /// Build an input rule that changes the type of a textblock when the
 /// matched text is typed into it. You'll usually want to start your
-/// regexp with `^` to that it is only matched at the start of a
+/// regexp with `^` so that it is only matched at the start of a
 /// textblock. The optional `getAttrs` parameter can be used to compute
 /// the new node's attributes, and works the same as in the
 /// `wrappingInputRule` function.
