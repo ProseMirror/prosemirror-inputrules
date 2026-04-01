@@ -21,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/prosemirror/prosemirror-inputrules.git"
+    "url": "git+https://code.haverbeke.berlin/prosemirror/prosemirror-inputrules.git"
   },
   "dependencies": {
     "prosemirror-state": "^1.0.0",
